@@ -1,0 +1,70 @@
+/data
+
+.env
+.venv/
+.idea/
+.vscode/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.db
+*.sqlite3
+*.log
+*.egg
+*.egg-info/
+*.dist-info/
+*.whl
+*.tar.gz
+*.zip
+*.DS_Store
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+# Pytest cache
+.pytest_cache/
+# Coverage reports
+.coverage
+.coverage.*
+# MyPy cache
+.mypy_cache/
+# Sphinx documentation
+docs/_build/
+# PyInstaller
+dist/
+
+# Pyre type checker
+.pyre/
+# Pyright type checker
+.pyright/
+# Bandit security linter
+.bandit/
+# Pylint
+.pylint.d/
+# Flake8
+.flake8
+# Black code formatter
+.black/
+# Isort
+.isort/
+# Virtual environment directories
+venv/
+videos
+uploads
+# Local configuration files
+*.local
+# Local settings files
+settings_local.py
+# Local environment files
+.env.local
+# Local secrets files
+secrets.local.py
+# Local database files
+db.local.sqlite3
+# Local cache files
+.cache/
+# Local log files
+*.local.log
+# Local temporary files
+*.tmp
+# Local backup files
+*.bak

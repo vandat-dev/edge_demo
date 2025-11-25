@@ -1,0 +1,19 @@
+syntax = "proto3";
+
+package edgedemo;
+
+service FrameStreamer {
+  // Service A streams frames; Service B acknowledges once stream completes.
+  rpc SendFrames (stream FrameChunk) returns (Ack);
+}
+
+message FrameChunk {
+  int32 index = 1;
+  bytes data = 2;
+}
+
+message Ack {
+  bool ok = 1;
+  string message = 2;
+}
+
