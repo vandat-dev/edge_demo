@@ -2,6 +2,7 @@ import asyncio
 import io
 import logging
 import os
+from datetime import datetime
 from typing import Iterable, Tuple
 
 import grpc
@@ -59,7 +60,7 @@ def frame_to_png_bytes(frame: np.ndarray) -> bytes:
         normalized = normalize_to_uint8(frame)
         image = Image.fromarray(normalized).convert("L")
     buffer = io.BytesIO()
-    image.save(buffer, format="PNG")
+    image.save(buffer, format="WEBP")
     return buffer.getvalue()
 
 
@@ -83,9 +84,15 @@ def send_frames(frames: np.ndarray, target: str):
         stub = FrameServiceStub(channel)
         for idx, frame in enumerate(frames):
             data = frame_to_png_bytes(frame)
+
             logger.info("Chuẩn bị gửi frame #%s", idx)
+            print()
             try:
+                start_time = datetime.now()
                 stub.SendFrame(FrameRequest(data=data))
+                print(datetime.now() - start_time)
+
+
             except Exception as e:
                 logger.error(f"Lỗi gửi frame #{idx}: {e}")
         

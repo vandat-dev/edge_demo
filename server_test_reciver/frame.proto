@@ -1,0 +1,13 @@
+syntax = "proto3";
+
+package clarius;
+
+service FrameService {
+  rpc SendFrame (FrameRequest) returns (FrameResponse);
+}
+
+message FrameRequest {
+  bytes data = 1;
+}
+
+message FrameResponse {}
