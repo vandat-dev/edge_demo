@@ -6,3 +6,4 @@ numpy
 pydicom
 Pillow
 python-multipart
+kafka-python

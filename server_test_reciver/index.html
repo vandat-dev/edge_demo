@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Realtime JPEG Stream</title>
+</head>
+
+<body>
+    <h2>Realtime Frames</h2>
+    <div>
+        <label>WS URL:
+            <input id="ws-url" size="40" value="ws://localhost:8800/ws">
+        </label>
+        <button id="connect-btn">Connect</button>
+    </div>
+    <p id="status">Disconnected</p>
+
+    <!-- chỗ hiển thị frame -->
+    <img id="frame" alt="Frame preview" style="max-width:100%;border:1px solid #ccc;" />
+
+    <script>
+        let ws;
+        const statusEl = document.getElementById("status");
+        const frameEl = document.getElementById("frame");
+
+        document.getElementById("connect-btn").onclick = () => {
+            const url = document.getElementById("ws-url").value;
+
+            if (ws) ws.close();
+
+            ws = new WebSocket(url);
+            ws.binaryType = "arraybuffer";
+
+            statusEl.textContent = "Connecting...";
+
+            ws.onopen = () => {
+                statusEl.textContent = "Connected";
+            };
+
+            ws.onmessage = (event) => {
+                // event.data = ArrayBuffer (JPEG bytes)
+                const blob = new Blob([event.data], { type: "image/jpeg" });
+                const url = URL.createObjectURL(blob);
+                frameEl.src = url;
+            };
+
+            ws.onclose = () => {
+                statusEl.textContent = "Disconnected";
+            };
+
+            ws.onerror = (err) => {
+                console.error("WS error:", err);
+            };
+        };
+    </script>
+
+</body>
+</html>
