@@ -16,7 +16,7 @@ from PIL import Image
 from frame_pb2 import FrameRequest
 from frame_pb2_grpc import FrameServiceStub
 
-GRPC_TARGET = os.getenv("GRPC_TARGET", "localhost:50051")
+GRPC_TARGET = os.getenv("GRPC_TARGET", "100.86.59.89:50051")
 
 logging.basicConfig(
     level=logging.INFO,
@@ -80,25 +80,23 @@ def send_frames(frames: np.ndarray, target: str):
     if frames.size == 0:
         raise ValueError("Không có frame để gửi.")
 
-    with grpc.insecure_channel(target) as channel:
-        stub = FrameServiceStub(channel)
-        for idx, frame in enumerate(frames):
-            data = frame_to_png_bytes(frame)
+    channel = grpc.insecure_channel(target)
+    stub = FrameServiceStub(channel)
 
-            logger.info("Chuẩn bị gửi frame #%s", idx)
-            print()
-            try:
-                start_time = datetime.now()
-                stub.SendFrame(FrameRequest(data=data))
-                print(datetime.now() - start_time)
+    for idx, frame in enumerate(frames):
+        # convert → bytes JPEG
+        data = frame_to_png_bytes(frame)
 
+        # logger.info("Gửi frame #%s", idx)
 
-            except Exception as e:
-                logger.error(f"Lỗi gửi frame #{idx}: {e}")
-        
-        logger.info("Đã gửi xong %d frame tới %s", frames.shape[0], target)
-        return {"ok": True, "message": "Frames sent"}
+        try:
+            # fire-and-forget: không chờ kết quả, không .result()
+            stub.SendFrame.future(FrameRequest(data=data))
+        except Exception as e:
+            logger.error(f"Lỗi gửi frame #{idx}: {e}")
 
+    logger.info("Đã gửi xong %d frame tới %s", frames.shape[0], target)
+    return {"ok": True, "message": "Frames sent"}
 
 @app.post("/upload")
 async def upload_dicom(
@@ -116,7 +114,7 @@ async def upload_dicom(
         raise HTTPException(status_code=400, detail=str(exc)) from exc
 
     loop = asyncio.get_running_loop()
-    chosen_target = "localhost:50051"
+    chosen_target = "100.86.59.89:50051"
     try:
         ack = await loop.run_in_executor(None, send_frames, frames, chosen_target)
     except Exception as exc:

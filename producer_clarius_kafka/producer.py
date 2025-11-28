@@ -14,7 +14,7 @@ from PIL import Image
 from kafka import KafkaProducer
 import json
 
-KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "localhost:9096")
+KAFKA_BOOTSTRAP = os.getenv("KAFKA_BOOTSTRAP", "100.86.59.89:9096")
 TOPIC = "test"
 
 logging.basicConfig(
@@ -82,13 +82,12 @@ def send_frames_via_kafka(frames: np.ndarray):
         raise ValueError("Không có frame để gửi.")
 
     for idx, frame in enumerate(frames):
+        print("Start Frame", idx, "took:", datetime.now())
         data = frame_to_png_bytes(frame)
-        start = datetime.now()
-
         producer.send(TOPIC, value=data)
         producer.flush()
 
-        print("Frame", idx, "took:", datetime.now() - start)
+        print("End Frame", idx, "took:", datetime.now())
 
     return {"ok": True, "message": f"Đã gửi {len(frames)} frame qua Kafka"}
 
